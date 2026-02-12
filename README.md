@@ -2,201 +2,366 @@
 
 OS Nexus Studio is an educational operating system simulation platform combining a high-performance C++ backend with a Python GUI frontend. It demonstrates CPU scheduling algorithms (FCFS, SJF, Priority, Round Robin) alongside a multithreaded TCP file server for concurrent client handling. Designed for clarity and learning, the project visualizes process execution, networking, and synchronization concepts in a practical environment 🚀, making core OS concepts easier to understand and experiment with 🧠.
 
-## 🚀 Quick Start
+## Table of Contents
 
-### Option 1: GUI Frontend (Recommended)
+1. [Overview](#overview)
+2. [Features](#features)
+   - [CPU Scheduling](#cpu-scheduling)
+   - [Memory Allocator](#memory-allocator)
+   - [File Server](#file-server)
+3. [Getting Started](#getting-started)
+4. [Project Structure](#project-structure)
+5. [Usage Guide](#usage-guide)
+   - [GUI Frontend](#gui-frontend)
+   - [Backend Terminal](#backend-terminal)
+   - [API Mode](#api-mode)
+6. [Architecture](#architecture)
+7. [Building from Source](#building-from-source)
+8. [API Reference](#api-reference)
+9. [Examples](#examples)
+10. [Troubleshooting](#troubleshooting)
+11. [Contributing](#contributing)
+12. [License](#license)
+
+
+## Overview
+
+OS-Nexus-Studio provides hands-on experience with core operating system concepts through an interactive simulation platform. The system demonstrates:
+
+- **CPU Scheduling** - Four scheduling algorithms with visual output and metrics
+- **Memory Management** - Custom block-based memory allocator
+- **Networking** - Multi-client TCP file server
+
+The platform bridges theory and practice by allowing users to experiment with OS concepts in a controlled environment.
+
+
+## Features
+
+### CPU Scheduling
+
+Four scheduling algorithms with comprehensive metrics:
+
+| Algorithm | Type | Description | Time Quantum |
+|-----------|------|-------------|-------------|
+| FCFS | Non-preemptive | First Come First Serve | - |
+| SJF | Non-preemptive | Shortest Job First | - |
+| Priority | Non-preemptive | Priority-based scheduling | - |
+| Round Robin | Preemptive | Time-slice based | 2 units |
+
+**Metrics Provided:**
+- Process execution timeline
+- Completion time (CT)
+- Turnaround time (TAT)
+- Waiting time (WT)
+- Average statistics
+- Gantt chart visualization
+
+### Memory Allocator
+
+Custom block-based allocator implementing:
+
+- **1MB Heap** - Pre-allocated virtual memory
+- **First-Fit Strategy** - Finds first suitable block
+- **Block Splitting** - Divides large blocks for efficiency
+- **Coalescing** - Merges adjacent free blocks
+- **Fragmentation Tracking** - Real-time statistics
+
+**Statistics:**
+- Total heap size
+- Allocated memory
+- Free memory
+- Fragmentation percentage
+
+### File Server
+
+Multi-client TCP server on port 9090:
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| LIST | List available files | `LIST` |
+| GET | Download file contents | `GET <filename>` |
+| INFO | Get file size | `INFO <filename>` |
+
+**Features:**
+- Concurrent client handling
+- Real-time connection status
+- Binary and text file support
+
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.8+ (for GUI frontend)
+- MinGW-w64 with g++ (for backend compilation)
+- Windows 10/11
+
+### Quick Start
+
+#### GUI Frontend (Recommended)
 ```cmd
 python client/mainClient.py
 ```
 
-### Option 2: Backend Terminal (Single Entry Point)
+#### Backend Terminal
 ```cmd
 server/main_system.exe
 ```
 
 
-## 🎯 Single Backend Entry Point
-
-The [`server/main_system.exe`](server/main_system.cpp) is the **main and only required backend file**. Running it gives you access to ALL features:
-
-```
-=============== MAIN MENU ===============
-  1. Memory Allocator Test       
-  2. CPU Scheduler (FCFS)        
-  3. CPU Scheduler (SJF)         
-  4. CPU Scheduler (Priority)    
-  5. CPU Scheduler (Round Robin)  
-  6. Run All Schedulers          
-  7. Start File Server           
-  9. List Processes (API)        
- 10. Add Process (API)           
- 11. Clear All Processes (API)   
- 12. Load Sample Processes (API) 
-  8. Exit                        
-```
-
-
-## ✨ Features
-
-### 🎨 Modern GUI Frontend
-- Clean, professional tkinter interface with custom themes
-- **Add custom processes** with ID, Arrival Time, Burst Time, Priority
-- **Clear all processes** or **load sample data**
-- One-click algorithm execution (FCFS, SJF, Priority, Round Robin)
-- Visual results with tabbed output
-- **All processes stored in frontend - customize your own data!**
-
-### 🧠 Custom Memory Allocator
-- **1MB Heap** with block-based allocation
-- **First-fit allocation** strategy
-- **Block splitting** for efficient memory use
-- **Coalescing** to reduce fragmentation
-- Real-time statistics (allocated, free, fragmentation %)
-
-### ⚙️ Enhanced CPU Scheduler
-All scheduling algorithms with detailed statistics:
-
-| Algorithm | Description |
-|-----------|-------------|
-| **FCFS** | First Come First Serve |
-| **SJF** | Shortest Job First (Non-preemptive) |
-| **Priority** | Priority-based scheduling |
-| **Round Robin** | Time quantum-based (Q=2) |
-
-Each algorithm displays:
-- Process execution timeline
-- Completion time, Turnaround time, Waiting time
-- Average statistics
-- Gantt chart visualization
-
-### 📁 Enhanced File Server
-- **TCP-based** file server on port 9090
-- **Commands supported:**
-  - `LIST` - List available files
-  - `GET <filename>` - Download file contents
-  - `INFO <filename>` - Get file size info
-- Multi-client support
-- Real-time connection status
-
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 OS-Nexus-Studio/
-├── README.md                 # This file
-├── LICENSE                   # MIT License
+├── README.md                 # Documentation
+├── LICENSE                    # MIT License
 ├── .gitignore                # Git ignore rules
 ├── client/
-│   └── mainClient.py         # ⭐ Modern tkinter GUI
+│   └── mainClient.py         # GUI Frontend (Python/tkinter)
 └── server/
-    ├── main_system.cpp       # ⭐ MAIN BACKEND (All-in-one)
-    ├── main_system.exe        # ⭐ Compiled executable
-    ├── scheduler.cpp         # Standalone scheduler (optional)
-    ├── scheduler.exe         # Standalone executable (optional)
-    ├── file_server.cpp       # Standalone file server (optional)
-    └── file_server.exe       # Standalone executable (optional)
+    ├── main_system.cpp       # Main backend (C++)
+    ├── main_system.exe       # Compiled executable
+    ├── scheduler.cpp         # Standalone scheduler
+    ├── scheduler.exe         # Compiled executable
+    ├── file_server.cpp       # Standalone file server
+    └── file_server.exe       # Compiled executable
 ```
 
-> **Note:** Only `main_system.cpp` and `main_system.exe` are required. The standalone files are optional extras.
 
-
-## 🎮 Usage Guide
+## Usage Guide
 
 ### GUI Frontend
 
-1. Launch the GUI:
-   ```cmd
-   python client/mainClient.py
-   ```
+#### Adding Processes
 
-2. **Add Custom Processes:**
-   - Enter Process ID (e.g., P1), Arrival Time, Burst Time, Priority
-   - Click "Add Process" to add to the list
-   - Click "Clear All" to reset
-   - Click "Load Sample Data" to restore default 5 processes
+1. Enter process details:
+   - **Process ID** - Unique identifier (e.g., P1, P2)
+   - **Arrival Time** - When process arrives
+   - **Burst Time** - CPU time required
+   - **Priority** - Scheduling priority (1-10)
 
-3. **Run Algorithms:**
-   - Click any algorithm button (FCFS, SJF, Priority, Round Robin)
-   - Your custom processes will be sent to the backend for processing
-   - Or "Run All Algorithms" for comparison
-   - View results in the tabbed panels
+2. Click "Add Process"
 
-4. **Enhanced Backend:**
-   - Click "Run Memory Test" to test custom allocator
-   - Click "Run All Schedulers" for comprehensive output
-   - Click "Open Backend Terminal" to run interactively
+3. Manage processes:
+   - "Clear All" - Remove all processes
+   - "Load Sample Data" - Restore default 5 processes
+   - "Refresh Process List" - Reload from backend
 
-### Backend Terminal (Single Entry Point)
+#### Running Algorithms
 
-Run the main backend executable:
-```cmd
-server/main_system.exe
+1. Select an algorithm:
+   - FCFS
+   - SJF
+   - Priority
+   - Round Robin
+   - "Run All Algorithms" - Compare all
+
+2. View results in tabbed panels
+
+3. Gantt chart displays execution timeline
+
+#### Backend Features
+
+- **Run Memory Test** - Test custom allocator
+- **Start File Server** - Launch TCP server
+- **Open Backend Terminal** - Interactive mode
+
+### Backend Terminal
+
+Run `server/main_system.exe` for interactive mode:
+
+```
+=============== MAIN MENU ===============
+  1. Memory Allocator Test
+  2. CPU Scheduler (FCFS)
+  3. CPU Scheduler (SJF)
+  4. CPU Scheduler (Priority)
+  5. CPU Scheduler (Round Robin)
+  6. Run All Schedulers
+  7. Start File Server
+  9. List Processes (API)
+ 10. Add Process (API)
+ 11. Clear All Processes (API)
+ 12. Load Sample Processes (API)
+  8. Exit
 ```
 
-The system comes pre-loaded with 5 sample processes. Simply choose an option from the menu:
+### API Mode
+
+The backend supports programmatic access via pipe I/O:
+
+**Input Format:**
+```
+<num_processes>
+<arrival_time> <burst_time> <priority>
+...
+<algorithm_option>
+8
+```
+
+**Example (FCFS with 3 processes):**
+```
+3
+0 5 2
+1 3 1
+2 8 4
+2
+8
+```
+
+**Response Format:**
+```
+--- Running FCFS Scheduler ---
+P1: 0 -> 5 | Waiting: 0
+P2: 5 -> 8 | Waiting: 4
+...
+
+--- Scheduling Statistics ---
+ID    AT    BT    CT    TAT    WT
+----------------------------------------
+P1    0     5     5     5      0
+...
+
+Avg Waiting Time: 3.33
+Avg Turnaround Time: 7.33
+```
 
 
-## 🔧 Building from Source
+## Architecture
 
-### Compile Main Backend (Required)
+### System Components
+
+```
+┌─────────────────────────────────────────┐
+│           GUI Frontend                   │
+│         (Python/tkinter)                 │
+│                                         │
+│  - Process management UI                 │
+│  - Algorithm selection                   │
+│  - Result visualization                 │
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────┐
+│           Backend (C++)                  │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │    Custom Memory Allocator       │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │    CPU Scheduler                 │    │
+│  │  - FCFS  - SJF                  │    │
+│  │  - Priority  - Round Robin       │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │    TCP File Server               │    │
+│  │  - LIST  - GET  - INFO          │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+```
+
+### Data Flow
+
+1. User creates processes in GUI
+2. Frontend sends data to backend via pipe
+3. Backend computes scheduling results
+4. Results returned and visualized in GUI
+
+
+## Building from Source
+
+### Main Backend (Required)
+
 ```cmd
 g++ -std=c++11 -o server/main_system server/main_system.cpp -lws2_32
 ```
 
-### Optional: Compile Standalone Scheduler
+### Standalone Scheduler (Optional)
+
 ```cmd
 g++ -std=c++11 -o server/scheduler server/scheduler.cpp
 ```
 
-### Optional: Compile Standalone File Server
+### Standalone File Server (Optional)
+
 ```cmd
 g++ -o server/file_server server/file_server.cpp -lws2_32
 ```
 
 
-## 🐛 Troubleshooting
+## API Reference
 
-### "g++ not found"
-- Install MinGW-w64 and add to PATH
-- Restart terminal after installation
+### Process Structure
 
-### "Python not found"
-- Reinstall Python with "Add to PATH" option
-- Or use full path: `C:\Python313\python.exe`
+```cpp
+struct Process {
+    int id;           // Process identifier
+    int arrival;      // Arrival time
+    int burst;         // Burst time (CPU required)
+    int priority;      // Scheduling priority
+    int completion;    // Completion time
+    int turnaround;   // Turnaround time
+    int waiting;      // Waiting time
+};
+```
 
-### GUI won't start
-- Ensure Python is installed with tkinter support
-- Install dependencies: `pip install tk`
+### Scheduler Methods
 
-### Port 9090 in use
-- Close any running file server
-- Or modify PORT constant in source code
+| Method | Description |
+|--------|-------------|
+| `addProcess()` | Add a process to the queue |
+| `runFCFS()` | Execute FCFS scheduling |
+| `runSJF()` | Execute SJF scheduling |
+| `runPriority()` | Execute Priority scheduling |
+| `runRoundRobin(q)` | Execute Round Robin with quantum q |
+| `getProcesses()` | Get all processes |
+| `clear()` | Clear all processes |
 
+### Memory Allocator Methods
 
-## 🛠️ Technologies
+| Method | Description |
+|--------|-------------|
+| `allocate(size)` | Allocate memory block |
+| `deallocate(ptr)` | Free allocated block |
+| `printStats()` | Print allocation statistics |
 
-| Component | Technology |
-|-----------|------------|
-| Backend | C++ (GCC/MinGW) |
-| Memory | Custom Allocator (VirtualAlloc) |
-| Networking | Winsock2 (Windows) |
-| GUI | Python tkinter |
-| OS | Windows 11 |
+## Examples
 
+### Example 1: FCFS Scheduling
 
-## 📝 File Descriptions
+**Input:**
+```
+3
+0 5 2
+1 3 1
+2 8 4
+2
+8
+```
 
-| File | Description |
-|------|-------------|
-| [`server/main_system.cpp`](server/main_system.cpp) | ⭐ **Main backend** - Complete system with memory allocator, all schedulers, and file server |
-| [`client/mainClient.py`](client/mainClient.py) | ⭐ **GUI Frontend** - Add custom processes, run algorithms, view results |
-| [`server/scheduler.cpp`](server/scheduler.cpp) | Standalone CPU scheduler (optional) |
-| [`server/file_server.cpp`](server/file_server.cpp) | Standalone TCP file server (optional) |
+**Output:**
+```
+--- Running FCFS Scheduler ---
+P1: 0 -> 5 | Waiting: 0
+P2: 5 -> 8 | Waiting: 4
+P3: 8 -> 16 | Waiting: 6
 
+--- Scheduling Statistics ---
+ID    AT    BT    CT    TAT    WT
+----------------------------------------
+P1    0     5     5     5      0
+P2    1     3     8     7      4
+P3    2     8     16    14     6
+----------------------------------------
+Avg Waiting Time: 3.33
+Avg Turnaround Time: 8.67
+```
 
-## 🎯 Sample Output
+### Example 2: Memory Allocation Test
 
-### Memory Allocator Test
+**Output:**
 ```
 === Memory Allocator Test ===
 === Memory Allocator Stats ===
@@ -212,26 +377,19 @@ Free: 1024 KB
 Fragmentation: 0.00%
 ```
 
-### CPU Scheduler (FCFS)
-```
---- Running FCFS Scheduler ---
-P1: 0 -> 5 | Waiting: 0
-P2: 5 -> 8 | Waiting: 4
-P3: 8 -> 12 | Waiting: 6
 
---- Scheduling Statistics ---
-ID    AT    BT    CT    TAT    WT
---------------------------------------------
-P1    0     5     5     5      0
-P2    1     3     8     7      4
-P3    2     8     12    10     6
---------------------------------------------
-Avg Waiting Time: 3.33
-Avg Turnaround Time: 7.33
-```
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| g++ not found | Install MinGW-w64 and add to PATH. Restart terminal after installation. |
+| Python not found | Reinstall Python with "Add to PATH" option enabled. |
+| GUI won't start | Ensure tkinter is installed: `pip install tk` |
+| Port 9090 in use | Close any running file server or change PORT in source code |
+| Backend crashes | Ensure no other instance is running. Check Task Manager. |
 
 
-## 📚 License
+## License
 
 MIT License - Open-source project for educational purposes.
 
