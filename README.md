@@ -541,8 +541,6 @@ Copyright (c) 2026 Ujjwal Saini
 
 Author: [Ujjwal Saini](https://www.ujjwalsaini.dev/)
 
----
-
 ## Project Metadata
 
 Complete project information is available in:
@@ -550,3 +548,12 @@ Complete project information is available in:
 - [metadata.yaml](metadata.yaml) - YAML format for human readability
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.
+
+## Feedback and Contributions 💌
+Sorry But this repository not welcome Contributions! Yes u gave a Feedback and Suggestion via raising the [Issue](https://github.com/UjjwalSaini07/OS-Nexus-Studio/issues).
+
+<div align="center">
+    <a href="#top">
+        <img src="https://img.shields.io/badge/Back%20to%20Top-000000?style=for-the-badge&logo=github&logoColor=white" alt="Back to Top">
+    </a>
+</div
