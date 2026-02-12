@@ -4,17 +4,35 @@ A comprehensive multi-component system featuring custom memory allocator, enhanc
 
 ## 🚀 Quick Start
 
-### Run the Enhanced GUI Frontend
-
+### Option 1: GUI Frontend (Recommended)
 ```cmd
 python client/frontend.py
 ```
 
-### Run Enhanced Backend (Terminal Mode)
-
+### Option 2: Backend Terminal (Single Entry Point)
 ```cmd
 server/main_system.exe
 ```
+
+---
+
+## 🎯 Single Backend Entry Point
+
+The [`server/main_system.exe`](server/main_system.cpp) is the **main and only required backend file**. Running it gives you access to ALL features:
+
+```
+=============== MAIN MENU ===============
+  1. Memory Allocator Test       
+  2. CPU Scheduler (FCFS)        
+  3. CPU Scheduler (SJF)         
+  4. CPU Scheduler (Priority)    
+  5. CPU Scheduler (Round Robin)  
+  6. Run All Schedulers          
+  7. Start File Server           
+  8. Exit                        
+```
+
+---
 
 ## ✨ Features
 
@@ -65,16 +83,19 @@ Each algorithm displays:
 OS-Nexus-Studio/
 ├── README.md                 # This file
 ├── LICENSE                   # MIT License
+├── .gitignore                # Git ignore rules
 ├── client/
-│   └── frontend.py           # Modern tkinter GUI (Enhanced)
+│   └── frontend.py           # Modern tkinter GUI
 └── server/
-    ├── main_system.cpp       # Enhanced system (Memory + Scheduler + File Server)
-    ├── main_system.exe       # Compiled executable
-    ├── scheduler.cpp         # Standalone scheduler
-    ├── scheduler.exe         # Compiled executable
-    ├── file_server.cpp       # Standalone file server
-    └── file_server.exe       # Compiled executable
+    ├── main_system.cpp       # ⭐ MAIN BACKEND (All-in-one)
+    ├── main_system.exe        # ⭐ Compiled executable
+    ├── scheduler.cpp         # Standalone scheduler (optional)
+    ├── scheduler.exe         # Standalone executable (optional)
+    ├── file_server.cpp       # Standalone file server (optional)
+    └── file_server.exe       # Standalone executable (optional)
 ```
+
+> **Note:** Only `main_system.cpp` and `main_system.exe` are required. The standalone files are optional extras.
 
 
 ## 🎮 Usage Guide
@@ -89,7 +110,7 @@ OS-Nexus-Studio/
 2. **Add Processes:**
    - Enter Process ID, Arrival Time, Burst Time, Priority
    - Click "Add Process"
-   - Or click "Load Sample Data" for quick start
+   - Sample data (5 processes) loads automatically on startup
 
 3. **Run Algorithms:**
    - Click any algorithm button (FCFS, SJF, Priority, Round Robin)
@@ -101,59 +122,29 @@ OS-Nexus-Studio/
    - Click "Run All Schedulers" for comprehensive output
    - Click "Open Backend Terminal" to run interactively
 
-### Enhanced Backend (Terminal)
+### Backend Terminal (Single Entry Point)
 
-Run directly for interactive mode:
+Run the main backend executable:
 ```cmd
 server/main_system.exe
 ```
 
-**Menu Options:**
-```
-=============== MAIN MENU ===============
-  1. Memory Allocator Test       
-  2. CPU Scheduler (FCFS)        
-  3. CPU Scheduler (SJF)         
-  4. CPU Scheduler (Priority)    
-  5. CPU Scheduler (Round Robin)  
-  6. Run All Schedulers          
-  7. Start File Server           
-  8. Exit                        
-```
-
-
-## 📊 Scheduler Input Format
-
-For standalone scheduler:
-```
-<number_of_processes>
-<arrival_time> <burst_time> <priority>
-<arrival_time> <burst_time> <priority>
-...
-```
-
-**Example:**
-```
-3
-0 5 2
-1 3 1
-2 4 3
-```
+The system comes pre-loaded with 5 sample processes. Simply choose an option from the menu:
 
 
 ## 🔧 Building from Source
 
-### Compile Enhanced Backend
+### Compile Main Backend (Required)
 ```cmd
 g++ -std=c++11 -o server/main_system server/main_system.cpp -lws2_32
 ```
 
-### Compile Standalone Scheduler
+### Optional: Compile Standalone Scheduler
 ```cmd
 g++ -std=c++11 -o server/scheduler server/scheduler.cpp
 ```
 
-### Compile Standalone File Server
+### Optional: Compile Standalone File Server
 ```cmd
 g++ -o server/file_server server/file_server.cpp -lws2_32
 ```
@@ -193,10 +184,10 @@ g++ -o server/file_server server/file_server.cpp -lws2_32
 
 | File | Description |
 |------|-------------|
-| [`server/main_system.cpp`](server/main_system.cpp) | Complete system with memory allocator, all schedulers, and file server |
-| [`server/scheduler.cpp`](server/scheduler.cpp) | Standalone CPU scheduler |
-| [`server/file_server.cpp`](server/file_server.cpp) | Standalone TCP file server |
+| [`server/main_system.cpp`](server/main_system.cpp) | ⭐ **Main backend** - Complete system with memory allocator, all schedulers, and file server |
 | [`client/frontend.py`](client/frontend.py) | Modern GUI frontend connecting to backend |
+| [`server/scheduler.cpp`](server/scheduler.cpp) | Standalone CPU scheduler (optional) |
+| [`server/file_server.cpp`](server/file_server.cpp) | Standalone TCP file server (optional) |
 
 
 ## 🎯 Sample Output
