@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: os-nexus-studio
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../server:/app/server
+      - ../client:/app/client
+    stdin_open: true
+    author: "UjjwalS"
+    author_url: "https://www.ujjwalsaini.dev/"
+    tty: true
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: os-nexus-nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../server:/var/www/files:ro
+    depends_on:
+      - app
