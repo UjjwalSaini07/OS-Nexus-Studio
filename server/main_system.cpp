@@ -178,6 +178,10 @@ public:
         processes.emplace_back(id, arrival, burst, priority);
     }
     
+    vector<Process> getProcesses() {
+        return processes;
+    }
+    
     void clear() {
         processes.clear();
         gantt.clear();
@@ -498,13 +502,21 @@ void printMenu() {
     cout << BOLD << "  5. CPU Scheduler (Round Robin)  " << RESET << endl;
     cout << BOLD << "  6. Run All Schedulers          " << RESET << endl;
     cout << BOLD << "  7. Start File Server           " << RESET << endl;
+    cout << BOLD << "  9. List Processes (API)        " << RESET << endl;
     cout << BOLD << "  8. Exit                        " << RESET << endl;
     cout << BOLD << CYAN << "==========================================" << RESET << endl;
     cout << BOLD << YELLOW << "Choose an option: " << RESET;
 }
 
 int main() {
-    printBanner();
+    // Check if stdin is a pipe (API mode) - GetFileType for stdin
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD fileType = GetFileType(hStdin);
+    bool apiMode = (fileType == FILE_TYPE_PIPE);
+    
+    if (!apiMode) {
+        printBanner();
+    }
     
     CustomAllocator allocator;
     EnhancedScheduler scheduler;
@@ -517,12 +529,18 @@ int main() {
     scheduler.addProcess(4, 3, 6, 3);
     scheduler.addProcess(5, 5, 4, 2);
     
-    cout << GREEN << "[OK] Loaded 5 sample processes" << RESET << endl;
+    if (!apiMode) {
+        cout << GREEN << "[OK] Loaded 5 sample processes" << RESET << endl;
+    }
     
     while (true) {
-        printMenu();
+        if (!apiMode) {
+            printMenu();
+        }
         int choice;
-        cin >> choice;
+        if (!(cin >> choice)) {
+            break;  // No more input in API mode
+        }
         
         switch (choice) {
             case 1: {
@@ -572,6 +590,14 @@ int main() {
                 if (fileServer.start()) {
                     fileServer.run();
                 }
+                break;
+            case 9:
+                // List processes in a parseable format for frontend
+                cout << "PROCESSES_START" << endl;
+                for (const auto& p : scheduler.getProcesses()) {
+                    cout << "P" << p.id << ":" << p.arrival << ":" << p.burst << ":" << p.priority << endl;
+                }
+                cout << "PROCESSES_END" << endl;
                 break;
             case 8:
                 cout << BOLD << GREEN << "\nGoodbye!" << RESET << endl;
