@@ -1,6 +1,6 @@
 # OS-Nexus-Studio
 
-A comprehensive multi-component system featuring custom memory allocator, enhanced CPU scheduler with GUI, and file server.
+OS Nexus Studio is an educational operating system simulation platform combining a high-performance C++ backend with a Python GUI frontend. It demonstrates CPU scheduling algorithms (FCFS, SJF, Priority, Round Robin) alongside a multithreaded TCP file server for concurrent client handling. Designed for clarity and learning, the project visualizes process execution, networking, and synchronization concepts in a practical environment 🚀, making core OS concepts easier to understand and experiment with 🧠.
 
 ## 🚀 Quick Start
 
