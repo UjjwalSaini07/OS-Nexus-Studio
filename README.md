@@ -268,60 +268,9 @@ Avg Waiting Time: 3.33
 Avg Turnaround Time: 7.33
 ```
 
+## System Architecture
 
-## Architecture
-
-### System Components
-
-```
-┌─────────────────────────────────────────┐
-│           GUI Frontend                   │
-│         (Python/tkinter)                 │
-│                                         │
-│  - Process management UI                 │
-│  - Algorithm selection                   │
-│  - Result visualization                 │
-└─────────────────┬───────────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────┐
-│           Backend (C++)                 │
-│                                         │
-│  ┌─────────────────────────────────┐    │
-│  │    Custom Memory Allocator       │    │
-│  └─────────────────────────────────┘    │
-│                                         │
-│  ┌─────────────────────────────────┐    │
-│  │    CPU Scheduler                  │    │
-│  │  - FCFS  - SJF                  │    │
-│  │  - Priority  - Round Robin       │    │
-│  └─────────────────────────────────┘    │
-│                                         │
-│  ┌─────────────────────────────────┐    │
-│  │    TCP File Server               │    │
-│  │  - LIST  - GET  - INFO         │    │
-│  └─────────────────────────────────┘    │
-└─────────────────┬───────────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────┐
-│           Nginx Reverse Proxy           │
-│                                         │
-│  - Load balancing                       │
-│  - Static file serving                  │
-│  - SSL termination                      │
-│  - Rate limiting                       │
-└─────────────────┬───────────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────┐
-│           Docker Container              │
-│                                         │
-│  - Isolated environment                │
-│  - Reproducible deployment              │
-│  - Easy scaling                        │
-└─────────────────────────────────────────┘
-```
+<img width="1399" height="969" alt="OSNexus" src="https://github.com/user-attachments/assets/cf1d451b-179f-447b-b41d-729fedb1080d" />
 
 ### Data Flow
 
