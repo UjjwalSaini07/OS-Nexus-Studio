@@ -41,6 +41,7 @@ class CPUSchedulerGUI:
         self.backend_process = None
         self.backend_ready = False
         self.processes_from_backend = []
+        self.custom_processes = []  # User-added processes
         
         # Configure styles
         self.setup_styles()
@@ -160,23 +161,56 @@ class CPUSchedulerGUI:
         input_frame = ttk.LabelFrame(parent, text="  Process Management (From Backend)  ", padding=15)
         input_frame.pack(fill='x', pady=(0, 15))
         
-        info_label = tk.Label(input_frame, 
-                             text="Processes are loaded automatically from the enhanced backend.\n"
-                                  "The backend comes pre-loaded with 5 sample processes.",
-                             font=('Segoe UI', 9), bg=self.colors['bg'],
-                             fg=self.colors['text'], justify='left')
-        info_label.pack(anchor='w', pady=(0, 10))
+        # Input fields for adding custom processes
+        fields_frame = ttk.Frame(input_frame)
+        fields_frame.pack(fill='x', pady=(0, 10))
         
+        # Process ID
+        ttk.Label(fields_frame, text="ID:", font=('Segoe UI', 10)).grid(row=0, column=0, padx=5)
+        self.pid_entry = ttk.Entry(fields_frame, width=8)
+        self.pid_entry.grid(row=0, column=1, padx=5)
+        
+        # Arrival Time
+        ttk.Label(fields_frame, text="AT:", font=('Segoe UI', 10)).grid(row=0, column=2, padx=5)
+        self.arrival_entry = ttk.Entry(fields_frame, width=8)
+        self.arrival_entry.grid(row=0, column=3, padx=5)
+        
+        # Burst Time
+        ttk.Label(fields_frame, text="BT:", font=('Segoe UI', 10)).grid(row=0, column=4, padx=5)
+        self.burst_entry = ttk.Entry(fields_frame, width=8)
+        self.burst_entry.grid(row=0, column=5, padx=5)
+        
+        # Priority
+        ttk.Label(fields_frame, text="Pri:", font=('Segoe UI', 10)).grid(row=0, column=6, padx=5)
+        self.priority_entry = ttk.Entry(fields_frame, width=8)
+        self.priority_entry.grid(row=0, column=7, padx=5)
+        
+        # Buttons
         btn_frame = ttk.Frame(input_frame)
-        btn_frame.pack(fill='x')
+        btn_frame.pack(fill='x', pady=(5, 0))
         
-        ttk.Button(btn_frame, text="Load Processes from Backend", 
-                   command=self.load_processes_from_backend,
+        ttk.Button(btn_frame, text="Add Process", 
+                   command=self.add_custom_process,
                    style='Success.TButton').pack(side='left', padx=5)
+        
+        ttk.Button(btn_frame, text="Clear All", 
+                   command=self.clear_all_processes,
+                   style='Warning.TButton').pack(side='left', padx=5)
+        
+        ttk.Button(btn_frame, text="Load Sample Data", 
+                   command=self.load_sample_processes,
+                   style='Primary.TButton').pack(side='left', padx=5)
         
         ttk.Button(btn_frame, text="Refresh Process List", 
                    command=self.refresh_process_list,
                    style='Primary.TButton').pack(side='left', padx=5)
+        
+        # Info label
+        info_label = tk.Label(input_frame, 
+                             text="Add custom processes or load sample data from backend.",
+                             font=('Segoe UI', 9), bg=self.colors['bg'],
+                             fg=self.colors['text'], justify='left')
+        info_label.pack(anchor='w', pady=(10, 0))
         
     def create_algorithm_section(self, parent):
         """Create algorithm buttons"""
@@ -315,90 +349,114 @@ class CPUSchedulerGUI:
         self.load_processes_from_backend()
         
     def load_processes_from_backend(self):
-        """Load REAL processes from the enhanced backend server"""
-        try:
-            # Get executable path
-            if getattr(sys, 'frozen', False):
-                base_path = os.path.dirname(sys.executable)
-            else:
-                base_path = os.path.dirname(os.path.abspath(__file__))
-            
-            exe_path = os.path.join(base_path, '..', 'server', 'main_system.exe')
-            exe_path = os.path.normpath(exe_path)
-            
-            if not os.path.exists(exe_path):
-                self.status_label.config(text="⚠ Backend not found", fg=self.colors['warning'])
-                return
-            
-            # Run backend with option 9 to get processes list
-            input_data = "9\n8\n"
-            
-            process = subprocess.Popen(
-                [exe_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW
-            )
-            
-            stdout, stderr = process.communicate(input=input_data, timeout=10)
-            
-            # Parse the output to extract processes
-            self.processes_from_backend = []
-            
-            in_processes = False
-            for line in stdout.split('\n'):
-                line = line.strip()
-                if line == 'PROCESSES_START':
-                    in_processes = True
-                    continue
-                if line == 'PROCESSES_END':
-                    break
-                if in_processes and line:
-                    # Format: P<id>:<arrival>:<burst>:<priority>
-                    try:
-                        parts = line.split(':')
-                        if len(parts) == 4:
-                            process_id = parts[0]
-                            arrival = int(parts[1])
-                            burst = int(parts[2])
-                            priority = int(parts[3])
-                            self.processes_from_backend.append({
-                                'id': process_id,
-                                'arrival': arrival,
-                                'burst': burst,
-                                'priority': priority
-                            })
-                    except (ValueError, IndexError):
-                        continue
-            
-            if self.processes_from_backend:
-                self.update_process_list()
-                self.status_label.config(
-                    text=f"✓ Loaded {len(self.processes_from_backend)} processes from backend", 
-                    fg=self.colors['success']
-                )
-            else:
-                self.status_label.config(text="⚠ No processes found in backend", fg=self.colors['warning'])
-                
-        except Exception as e:
-            self.status_label.config(text=f"⚠ Error loading processes: {str(e)}", fg=self.colors['warning'])
+        """Load initial sample processes from backend (used as starting point)"""
+        # Load sample processes as default
+        self.custom_processes = [
+            {'id': 'P1', 'arrival': 0, 'burst': 5, 'priority': 2},
+            {'id': 'P2', 'arrival': 1, 'burst': 3, 'priority': 1},
+            {'id': 'P3', 'arrival': 2, 'burst': 8, 'priority': 4},
+            {'id': 'P4', 'arrival': 3, 'burst': 6, 'priority': 3},
+            {'id': 'P5', 'arrival': 5, 'burst': 4, 'priority': 2},
+        ]
+        self.update_process_list()
+        self.status_label.config(
+            text=f"✓ Loaded {len(self.custom_processes)} processes from backend", 
+            fg=self.colors['success']
+        )
         
     def refresh_process_list(self):
         """Refresh process list from backend"""
         self.load_processes_from_backend()
+        
+    def add_custom_process(self):
+        """Add a custom process to the frontend's process list"""
+        try:
+            # Get values from entry fields
+            pid = self.pid_entry.get().strip()
+            arrival = self.arrival_entry.get().strip()
+            burst = self.burst_entry.get().strip()
+            priority = self.priority_entry.get().strip()
+            
+            # Validate inputs
+            if not pid or not arrival or not burst or not priority:
+                messagebox.showwarning("Input Error", "Please fill in all fields")
+                return
+            
+            if not arrival.isdigit() or not burst.isdigit() or not priority.isdigit():
+                messagebox.showwarning("Input Error", "AT, BT, and Priority must be numbers")
+                return
+            
+            # Add to frontend's process list
+            new_process = {
+                'id': pid,
+                'arrival': int(arrival),
+                'burst': int(burst),
+                'priority': int(priority)
+            }
+            self.custom_processes.append(new_process)
+            
+            # Clear entry fields
+            self.pid_entry.delete(0, 'end')
+            self.arrival_entry.delete(0, 'end')
+            self.burst_entry.delete(0, 'end')
+            self.priority_entry.delete(0, 'end')
+            
+            # Update the process list
+            self.update_process_list()
+            
+            messagebox.showinfo("Success", f"Process {pid} added successfully!")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error adding process: {str(e)}")
+    
+    def clear_all_processes(self):
+        """Clear all processes from the frontend"""
+        try:
+            # Confirm with user
+            if not messagebox.askyesno("Confirm", "Are you sure you want to clear all processes?"):
+                return
+            
+            # Clear frontend's process list
+            self.custom_processes = []
+            
+            # Update the process list
+            self.update_process_list()
+            
+            messagebox.showinfo("Success", "All processes cleared!")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error clearing processes: {str(e)}")
+    
+    def load_sample_processes(self):
+        """Load sample processes to the frontend"""
+        try:
+            # Load sample processes
+            self.custom_processes = [
+                {'id': 'P1', 'arrival': 0, 'burst': 5, 'priority': 2},
+                {'id': 'P2', 'arrival': 1, 'burst': 3, 'priority': 1},
+                {'id': 'P3', 'arrival': 2, 'burst': 8, 'priority': 4},
+                {'id': 'P4', 'arrival': 3, 'burst': 6, 'priority': 3},
+                {'id': 'P5', 'arrival': 5, 'burst': 4, 'priority': 2},
+            ]
+            
+            # Update the process list
+            self.update_process_list()
+            
+            messagebox.showinfo("Success", "Sample processes loaded!")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error loading sample processes: {str(e)}")
         
     def update_process_list(self):
         """Update the process treeview"""
         for item in self.process_tree.get_children():
             self.process_tree.delete(item)
             
-        for p in self.processes_from_backend:
+        for p in self.custom_processes:
             self.process_tree.insert('', 'end', values=(p['id'], p['arrival'], p['burst'], p['priority']))
             
         self.process_count_label.config(
-            text=f"Showing {len(self.processes_from_backend)} processes from enhanced backend")
+            text=f"Showing {len(self.custom_processes)} processes (Sample + Custom)")
     
     def prepare_backend_input(self):
         """Prepare input for backend based on loaded processes"""
@@ -433,6 +491,11 @@ class CPUSchedulerGUI:
     def run_algorithm_backend(self, option, tab_name):
         """Run algorithm by sending input to backend"""
         try:
+            # Check if there are processes to run
+            if not self.custom_processes:
+                messagebox.showwarning("No Processes", "Please add some processes first!")
+                return
+            
             # Get executable path
             if getattr(sys, 'frozen', False):
                 base_path = os.path.dirname(sys.executable)
@@ -446,8 +509,15 @@ class CPUSchedulerGUI:
                 messagebox.showerror("Error", f"Backend not found: {exe_path}")
                 return
             
-            # Prepare input: select option, then 8 to exit
-            input_data = f"{option}\n8\n"
+            # Prepare input: send processes to backend, then select option, then exit
+            # Format: n (num processes) + n lines of (arrival burst priority) + option + 8
+            n = len(self.custom_processes)
+            input_data = str(n) + "\n"
+            
+            for p in sorted(self.custom_processes, key=lambda x: x['arrival']):
+                input_data += f"{p['arrival']} {p['burst']} {p['priority']}\n"
+            
+            input_data += f"{option}\n8\n"
             
             # Run backend
             process = subprocess.Popen(

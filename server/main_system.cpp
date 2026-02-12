@@ -503,6 +503,9 @@ void printMenu() {
     cout << BOLD << "  6. Run All Schedulers          " << RESET << endl;
     cout << BOLD << "  7. Start File Server           " << RESET << endl;
     cout << BOLD << "  9. List Processes (API)        " << RESET << endl;
+    cout << BOLD << " 10. Add Process (API)           " << RESET << endl;
+    cout << BOLD << " 11. Clear All Processes (API)   " << RESET << endl;
+    cout << BOLD << " 12. Load Sample Processes (API)" << RESET << endl;
     cout << BOLD << "  8. Exit                        " << RESET << endl;
     cout << BOLD << CYAN << "==========================================" << RESET << endl;
     cout << BOLD << YELLOW << "Choose an option: " << RESET;
@@ -537,9 +540,28 @@ int main() {
         if (!apiMode) {
             printMenu();
         }
-        int choice;
-        if (!(cin >> choice)) {
+        
+        // In API mode, check if first input is number of processes
+        int firstInput;
+        if (!(cin >> firstInput)) {
             break;  // No more input in API mode
+        }
+        
+        // Check if this is process count (only in API mode)
+        int choice = firstInput;
+        if (apiMode && firstInput > 0 && firstInput <= 100) {
+            // This is the number of processes, read them first
+            int n = firstInput;
+            scheduler.clear();
+            for (int i = 0; i < n; i++) {
+                int arrival, burst, priority;
+                cin >> arrival >> burst >> priority;
+                scheduler.addProcess(i + 1, arrival, burst, priority);
+            }
+            // Now read the actual choice
+            if (!(cin >> choice)) {
+                break;
+            }
         }
         
         switch (choice) {
@@ -598,6 +620,33 @@ int main() {
                     cout << "P" << p.id << ":" << p.arrival << ":" << p.burst << ":" << p.priority << endl;
                 }
                 cout << "PROCESSES_END" << endl;
+                break;
+            case 10:
+                // Add process: id arrival burst priority
+                {
+                    int id, arrival, burst, priority;
+                    if (cin >> id >> arrival >> burst >> priority) {
+                        scheduler.addProcess(id, arrival, burst, priority);
+                        cout << "OK: Added process P" << id << endl;
+                    } else {
+                        cout << "ERROR: Invalid input. Format: id arrival burst priority" << endl;
+                    }
+                }
+                break;
+            case 11:
+                // Clear all processes
+                scheduler.clear();
+                cout << "OK: Cleared all processes" << endl;
+                break;
+            case 12:
+                // Load sample processes
+                scheduler.clear();
+                scheduler.addProcess(1, 0, 5, 2);
+                scheduler.addProcess(2, 1, 3, 1);
+                scheduler.addProcess(3, 2, 8, 4);
+                scheduler.addProcess(4, 3, 6, 3);
+                scheduler.addProcess(5, 5, 4, 2);
+                cout << "OK: Loaded 5 sample processes" << endl;
                 break;
             case 8:
                 cout << BOLD << GREEN << "\nGoodbye!" << RESET << endl;
