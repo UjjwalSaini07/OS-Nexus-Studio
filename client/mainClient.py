@@ -99,7 +99,7 @@ class CPUSchedulerGUI:
         header_frame.pack(fill='x')
         header_frame.pack_propagate(False)
         
-        title_label = tk.Label(header_frame, text="Advanced Operating Systems",
+        title_label = tk.Label(header_frame, text="OS Nexus Studio - CPU Scheduler & Memory Allocator",
                               font=('Segoe UI', 26, 'bold'), bg=self.colors['primary'], fg='white')
         title_label.pack(pady=(20, 5))
         
