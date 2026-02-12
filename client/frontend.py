@@ -315,25 +315,75 @@ class CPUSchedulerGUI:
         self.load_processes_from_backend()
         
     def load_processes_from_backend(self):
-        """Load processes from the enhanced backend"""
-        # The backend has built-in sample processes: P1-P5
-        # P1: AT=0, BT=5, Priority=2
-        # P2: AT=1, BT=3, Priority=1
-        # P3: AT=2, BT=8, Priority=4
-        # P4: AT=3, BT=6, Priority=3
-        # P5: AT=5, BT=4, Priority=2
-        
-        self.processes_from_backend = [
-            {'id': 'P1', 'arrival': 0, 'burst': 5, 'priority': 2},
-            {'id': 'P2', 'arrival': 1, 'burst': 3, 'priority': 1},
-            {'id': 'P3', 'arrival': 2, 'burst': 8, 'priority': 4},
-            {'id': 'P4', 'arrival': 3, 'burst': 6, 'priority': 3},
-            {'id': 'P5', 'arrival': 5, 'burst': 4, 'priority': 2},
-        ]
-        
-        self.update_process_list()
-        self.status_label.config(text=f"✓ Loaded {len(self.processes_from_backend)} processes from backend", 
-                                fg=self.colors['success'])
+        """Load REAL processes from the enhanced backend server"""
+        try:
+            # Get executable path
+            if getattr(sys, 'frozen', False):
+                base_path = os.path.dirname(sys.executable)
+            else:
+                base_path = os.path.dirname(os.path.abspath(__file__))
+            
+            exe_path = os.path.join(base_path, '..', 'server', 'main_system.exe')
+            exe_path = os.path.normpath(exe_path)
+            
+            if not os.path.exists(exe_path):
+                self.status_label.config(text="⚠ Backend not found", fg=self.colors['warning'])
+                return
+            
+            # Run backend with option 9 to get processes list
+            input_data = "9\n8\n"
+            
+            process = subprocess.Popen(
+                [exe_path],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            
+            stdout, stderr = process.communicate(input=input_data, timeout=10)
+            
+            # Parse the output to extract processes
+            self.processes_from_backend = []
+            
+            in_processes = False
+            for line in stdout.split('\n'):
+                line = line.strip()
+                if line == 'PROCESSES_START':
+                    in_processes = True
+                    continue
+                if line == 'PROCESSES_END':
+                    break
+                if in_processes and line:
+                    # Format: P<id>:<arrival>:<burst>:<priority>
+                    try:
+                        parts = line.split(':')
+                        if len(parts) == 4:
+                            process_id = parts[0]
+                            arrival = int(parts[1])
+                            burst = int(parts[2])
+                            priority = int(parts[3])
+                            self.processes_from_backend.append({
+                                'id': process_id,
+                                'arrival': arrival,
+                                'burst': burst,
+                                'priority': priority
+                            })
+                    except (ValueError, IndexError):
+                        continue
+            
+            if self.processes_from_backend:
+                self.update_process_list()
+                self.status_label.config(
+                    text=f"✓ Loaded {len(self.processes_from_backend)} processes from backend", 
+                    fg=self.colors['success']
+                )
+            else:
+                self.status_label.config(text="⚠ No processes found in backend", fg=self.colors['warning'])
+                
+        except Exception as e:
+            self.status_label.config(text=f"⚠ Error loading processes: {str(e)}", fg=self.colors['warning'])
         
     def refresh_process_list(self):
         """Refresh process list from backend"""
